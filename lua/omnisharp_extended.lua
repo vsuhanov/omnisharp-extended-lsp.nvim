@@ -204,6 +204,8 @@ M.handler = function(err, result, ctx, config)
 
       local locations = M.definitions_to_locations(result.result.Definitions)
 
+      print(config.on_list)
+      print("config on_list is passed")
       if config.on_list then
         local title = 'LSP Locations';
         assert(type(config.on_list) == 'function', 'on_list is not a function')
