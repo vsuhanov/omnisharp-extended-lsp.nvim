@@ -14,7 +14,7 @@ end
 local M = {}
 
 M.defolderize = function(str)
--- private static string Folderize(string path) => string.Join("/", path.Split('.'));
+  -- private static string Folderize(string path) => string.Join("/", path.Split('.'));
   return string.gsub(str, '[/\\]', '.')
 end
 
@@ -93,11 +93,11 @@ M.get_metadata = function(locations)
       -- request_sync?
       -- if async, need to trigger when all are finished
       local result, err = client.request_sync('o#/metadata', params, 10000)
-        if not err and result.result.Source == nil then
-          print("No definition found")
-          return nil
-        end
-        if not err and result.result.Source ~= nil then
+      if not err and result.result.Source == nil then
+        print("No definition found")
+        return nil
+      end
+      if not err and result.result.Source ~= nil then
         local bufnr, name = M.buf_from_metadata(result.result, client.id)
         -- change location name to the one returned from metadata
         -- alternative is to open buffer under location uri
@@ -156,7 +156,8 @@ M.handle_locations = function(locations, offset_encoding)
   local fetched = M.get_metadata(locations)
 
   if fetched == nil then
-    return true end
+    return true
+  end
   if not vim.tbl_isempty(fetched) then
     if #locations > 1 then
       utils.set_qflist_locations(locations, offset_encoding)
@@ -202,6 +203,13 @@ M.handler = function(err, result, ctx, config)
       end
 
       local locations = M.definitions_to_locations(result.result.Definitions)
+
+      if config.on_list then
+        local title = 'LSP Locations';
+        assert(type(config.on_list) == 'function', 'on_list is not a function')
+        config.on_list({ title = title, items = locations })
+        return
+      end
       local handled = M.handle_locations(locations, client.offset_encoding)
       if not handled then
         return vim.lsp.handlers['textDocument/definition'](err, result, ctx, config)
