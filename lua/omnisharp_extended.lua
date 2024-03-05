@@ -175,6 +175,10 @@ end
 
 M.handler = function(err, result, ctx, config)
   print("this handler is called")
+  if true then
+    return
+  end
+
   -- If definition request is made from meta document, then it SHOULD
   -- always return no results.
   local client = M.get_omnisharp_client()
