@@ -174,10 +174,6 @@ M.handle_locations = function(locations, offset_encoding)
 end
 
 M.handler = function(err, result, ctx, config)
-  print("this handler is called")
-  if true then
-    return
-  end
 
   -- If definition request is made from meta document, then it SHOULD
   -- always return no results.
@@ -194,6 +190,10 @@ M.handler = function(err, result, ctx, config)
       return
     end
 
+    print("2222")
+    if true then
+      return
+    end
     local params = {
       fileName = file_uri,
       column = ctx.params.position.character,
