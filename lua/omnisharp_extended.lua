@@ -174,7 +174,6 @@ M.handle_locations = function(locations, offset_encoding)
 end
 
 M.handler = function(err, result, ctx, config)
-
   -- If definition request is made from meta document, then it SHOULD
   -- always return no results.
   local client = M.get_omnisharp_client()
@@ -190,10 +189,6 @@ M.handler = function(err, result, ctx, config)
       return
     end
 
-    print("2222")
-    if true then
-      return
-    end
     local params = {
       fileName = file_uri,
       column = ctx.params.position.character,
@@ -207,16 +202,10 @@ M.handler = function(err, result, ctx, config)
         return
       end
 
-      local locations = M.definitions_to_locations(result.result.Definitions)
-
-      print(config.on_list)
-      print("config on_list is passed")
       if config.on_list then
-        local title = 'LSP Locations';
-        assert(type(config.on_list) == 'function', 'on_list is not a function')
-        config.on_list({ title = title, items = locations })
-        return
+        return vim.lsp.handlers['textDocument/definition'](err, result, ctx, config)
       end
+      local locations = M.definitions_to_locations(result.result.Definitions)
       local handled = M.handle_locations(locations, client.offset_encoding)
       if not handled then
         return vim.lsp.handlers['textDocument/definition'](err, result, ctx, config)
@@ -224,6 +213,10 @@ M.handler = function(err, result, ctx, config)
     end
   end
 
+
+  if config.on_list then
+    return vim.lsp.handlers['textDocument/definition'](err, result, ctx, config)
+  end
   local locations = M.textdocument_definition_to_locations(result)
   local handled = M.handle_locations(locations, client.offset_encoding)
   if not handled then
